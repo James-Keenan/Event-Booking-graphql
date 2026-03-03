@@ -24,8 +24,8 @@ module.exports = {
       title: args.eventInput.title,
       description: args.eventInput.description,
       price: +args.eventInput.price,
-      date: dateToString(args.eventInput.date),
-      creator: req.userId, 
+      date: new Date(args.eventInput.date),
+      creator: req.userId,
     });
     try {
       let createEvent;

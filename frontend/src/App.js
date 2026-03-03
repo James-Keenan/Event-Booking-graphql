@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import "./App.css";
 
 import AuthPage from "./pages/Auth";
@@ -7,18 +8,50 @@ import BookingPage from "./pages/Booking";
 
 import Navbar from "./components/navigation/MainNavagation";
 
+import { AuthContext } from "./context/auth-context";
+
 function App() {
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  const login = (token, userId, tokenExpiration) => {
+    setToken(token);
+    setUserId(userId);
+  };
+
+  const logout = () => {
+    setToken(null);
+    setUserId(null);
+  };
+
+  const isAuth = !!token;
+
   return (
     <>
-      <Navbar />
-      <main className="main-content">
-      <Routes>
-        <Route path="/" element={<Navigate to="/auth" replace />} />
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/bookings" element={<BookingPage />} />
-      </Routes>
-      </main>
+      <AuthContext.Provider
+        value={{
+          token: token,
+          userId: userId,
+          login: login,
+          logout: logout,
+        }}
+      >
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            {!isAuth && <Route path="/auth" element={<AuthPage />} />}
+            {isAuth && <Route path="/events" element={<EventsPage />} />}
+            {isAuth && <Route path="/bookings" element={<BookingPage />} />}
+            
+            {!isAuth && (
+              <Route path="*" element={<Navigate to="/auth" replace />} />
+            )}
+            {isAuth && (
+              <Route path="*" element={<Navigate to="/events" replace />} />
+            )}
+          </Routes>
+        </main>
+      </AuthContext.Provider>
     </>
   );
 }

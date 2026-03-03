@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import "./Auth.css";
+
+import { AuthContext } from "../context/auth-context";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const context = useContext(AuthContext);
+
+  const switchModeHandler = () => {
+    setIsLogin((prevState) => !prevState);
+  };
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -55,20 +63,30 @@ const AuthPage = () => {
           "Content-Type": "application/json",
         },
       });
+      const responseData = await response.json();
 
-      if (response.status !== 200 && response.status !== 201) {
-        throw new Error("Failed request.");
+      if (!response.ok) {
+        const backendMessage = responseData?.errors?.[0]?.message;
+        throw new Error(
+          backendMessage || `Request failed with status ${response.status}.`,
+        );
       }
 
-      const responseData = await response.json();
-      console.log(responseData);
+      if (responseData.errors && responseData.errors.length > 0) {
+        throw new Error(responseData.errors[0].message);
+      }
+
+      if (isLogin && responseData.data.login) {
+        context.login(
+          responseData.data.login.token,
+          responseData.data.login.userId,
+          responseData.data.login.tokenExpiration,
+        );
+      }
     } catch (error) {
       console.log(error);
+      alert(error.message);
     }
-  };
-
-  const switchModeHandler = () => {
-    setIsLogin((prevState) => !prevState);
   };
 
   return (
@@ -82,6 +100,7 @@ const AuthPage = () => {
             id="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            autoComplete="off"
           />
         </div>
         <div className="form-control">
@@ -91,6 +110,7 @@ const AuthPage = () => {
             id="password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            autoComplete="off"
           />
         </div>
         <div className="form-actions">

@@ -3,9 +3,9 @@
   left: 0;
   top: 0;
   width: 100%;
-  height: 3.5rem;
+  height: 4.5rem;
   background: #01def7;
-  padding: 0 1rem;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
 }
@@ -17,11 +17,11 @@
 
 .main-nav__logo h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 2.8rem;
 }
 
 .main-nav__items {
-  margin-left: 1.5rem;
+  margin-left: 4rem;
 }
 
 .main-nav__items ul {
@@ -36,12 +36,47 @@
 }
 
 .main-nav__items a {
-  color: rgb(40, 35, 17);
+  font: inherit;
+  border: none;
+  cursor: pointer;
+  color: white;
   text-decoration: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.8rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  display: inline-block;
 }
 
 .main-nav__items a:hover,
 .main-nav__items a:active,
 .main-nav__items a.active {
-  color: rgb(255, 215, 83);
+  background: linear-gradient(135deg, #45ddf1 0%, #667eea 100%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+.main-nav__logout {
+  margin-left: auto;
+  margin-right: 4rem;
+}
+
+.main-nav__logout button {
+  background: linear-gradient(135deg, #fc466b 0%, #ff6f61 100%);
+  font: inherit;
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 6px;
+  padding: 0.2rem 1.1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.main-nav__logout button:hover {
+  background: linear-gradient(135deg, #e74c3c 0%, #fc466b 100%);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
 }
