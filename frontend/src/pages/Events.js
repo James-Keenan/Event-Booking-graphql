@@ -45,20 +45,26 @@ const EventsPage = () => {
 
     const requestBody = {
       query: `
-         mutation {
-         createEvent(eventInput: {title: "${title}", description: "${description}", price: ${+price}, date: "${date}"}) {
-           _id
-           title
-           description
-           price
-           date
-           creator {
-             _id
-             email
-           }
-         }
-      }
+        mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!) {
+          createEvent(eventInput: {title: $title, description: $description, price: $price, date: $date}) {
+            _id
+            title
+            description
+            price
+            date
+            creator {
+              _id
+              email
+            }
+          }
+        }
       `,
+      variables: {
+        title,
+        description,
+        price: +price,
+        date,
+      },
     };
 
     try {
@@ -171,14 +177,17 @@ const EventsPage = () => {
   const bookEventHandler = async () => {
     const requestBody = {
       query: `
-        mutation {
-          bookEvent(eventId: "${selectedEvent._id}") {
+        mutation BookEvent($eventId: ID!) {
+          bookEvent(eventId: $eventId) {
             _id
             createdAt
             updatedAt
           }
         }
       `,
+      variables: {
+        eventId: selectedEvent._id,
+      },
     };
 
     try {
@@ -210,9 +219,8 @@ const EventsPage = () => {
 
   return (
     <>
+      <h1 className="events-title">Events</h1>
 
-          <h1 className="events-title">Events</h1>
-          
       {(creating || selectedEvent) && <Backdrop />}
       {creating && (
         <Modal

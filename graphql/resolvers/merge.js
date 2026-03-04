@@ -1,12 +1,32 @@
+const DataLoader = require("dataloader");
+
 const Event = require("../../models/event");
 const User = require("../../models/user");
 
 const { dateToString } = require("../../helpers/date");
 
+const eventLoader = new DataLoader((eventIds) => {
+  return events(eventIds);
+});
+
+const userLoader = new DataLoader((userIds) => {
+  return User.find({ _id: { $in: userIds } }).then((users) => {
+    return userIds.map((userId) => {
+      return (
+        users.find((user) => user._id.toString() === userId.toString()) || null
+      );
+    });
+  });
+});
+
 const events = async (eventIds) => {
   try {
-    const events = await Event.find({ _id: { $in: eventIds } });
-    return events.map((event) => {
+    const fetchedEvents = await Event.find({ _id: { $in: eventIds } });
+    return eventIds.map((id) => {
+      const event = fetchedEvents.find(
+        (e) => e._id.toString() === id.toString(),
+      );
+      if (!event) return null;
       return transformEvent(event);
     });
   } catch (err) {
@@ -16,8 +36,7 @@ const events = async (eventIds) => {
 
 const singleEvent = async (eventId) => {
   try {
-    const event = await Event.findById(eventId);
-    return transformEvent(event);
+    return await eventLoader.load(eventId.toString());
   } catch (err) {
     throw err;
   }
@@ -25,15 +44,17 @@ const singleEvent = async (eventId) => {
 
 const user = async (userId) => {
   try {
-    const user = await User.findById(userId);
+    const user = await userLoader.load(userId.toString());
     if (!user) {
-      throw new Error("User not found.");
+      return null;
     }
     return {
       ...user._doc,
       password: null,
       _id: user.id,
-      createdEvents: events.bind(this, user._doc.createdEvents),
+      createdEvents: eventLoader.loadMany(
+        user._doc.createdEvents.map((id) => id.toString()),
+      ),
     };
   } catch (err) {
     throw err;
