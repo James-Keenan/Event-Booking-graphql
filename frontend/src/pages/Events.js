@@ -3,6 +3,9 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import Modal from "../components/modal/modal";
 import Backdrop from "../components/backdrop/backdrop";
 import { AuthContext } from "../context/auth-context";
+import Spinner from "../components/spinner/spinner";
+
+import EventList from "../components/Events/EventList/EventList";
 
 import "./Events.css";
 
@@ -10,7 +13,7 @@ const EventsPage = () => {
   const authContext = useContext(AuthContext);
 
   // State for modal visibility
-  const [creating, setCreating] = React.useState(false);
+  const [creating, setCreating] = useState(false);
 
   // State for form inputs
   const [title, setTitle] = useState("");
@@ -19,6 +22,9 @@ const EventsPage = () => {
   const [description, setDescription] = useState("");
 
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const startCreateEventHandler = () => {
     setCreating(true);
@@ -86,8 +92,9 @@ const EventsPage = () => {
 
       // Close modal
       setCreating(false);
-      // Fetch events to show the newly created one
-      await fetchEventsHandler();
+      // Add new event directly to list without re-fetching
+      const newEvent = responseData.data.createEvent;
+      setEvents((prevEvents) => [...prevEvents, newEvent]);
     } catch (error) {
       setError(error.message);
     }
@@ -101,9 +108,6 @@ const EventsPage = () => {
     setCreating(false);
     setError(null);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [events, setEvents] = useState([]);
 
   const fetchEventsHandler = useCallback(async () => {
     setIsLoading(true);
@@ -148,9 +152,9 @@ const EventsPage = () => {
 
       setEvents(responseData.data.events);
     } catch (error) {
-      setError(error.message); 
+      setError(error.message);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   }, [authContext.token]);
 
@@ -158,9 +162,55 @@ const EventsPage = () => {
     fetchEventsHandler();
   }, [fetchEventsHandler]);
 
+  const showDetailHandler = (eventId) => {
+    const event = events.find((e) => e._id === eventId);
+    setSelectedEvent(event);
+    return event;
+  };
+
+  const bookEventHandler = async () => {
+    const requestBody = {
+      query: `
+        mutation {
+          bookEvent(eventId: "${selectedEvent._id}") {
+            _id
+            createdAt
+            updatedAt
+          }
+        }
+      `,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3005/graphql", {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + authContext.token,
+        },
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      if (responseData.errors && responseData.errors.length > 0) {
+        throw new Error(responseData.errors[0].message);
+      }
+
+      console.log("Booked!", responseData.data.bookEvent);
+      setSelectedEvent(null);
+    } catch (error) {
+      console.error("Booking failed:", error.message);
+    }
+  };
+
   return (
     <>
-      {creating && <Backdrop />}
+      {(creating || selectedEvent) && <Backdrop />}
       {creating && (
         <Modal
           title="Add Event"
@@ -168,6 +218,7 @@ const EventsPage = () => {
           canConfirm
           onCancel={cancelHandler}
           onConfirm={submitEventHandler}
+          confirmText="Create"
         >
           {error && <p className="error">{error}</p>}
           <form>
@@ -215,6 +266,26 @@ const EventsPage = () => {
         </Modal>
       )}
 
+      {selectedEvent && (
+        <Modal
+          title={selectedEvent.title}
+          canCancel
+          canConfirm
+          onCancel={() => setSelectedEvent(null)}
+          onConfirm={bookEventHandler}
+          confirmText="Book"
+        >
+          <p>
+            <b>Description:</b> {selectedEvent.description}
+          </p>
+          <p>
+            <b>Price:</b> ${selectedEvent.price}
+          </p>
+          <p>
+            <b>Date:</b> {new Date(selectedEvent.date).toLocaleDateString()}
+          </p>
+        </Modal>
+      )}
       {authContext.token && (
         <div className="events-control">
           <p>Share Your Own Events</p>
@@ -224,18 +295,15 @@ const EventsPage = () => {
         </div>
       )}
 
-      <ul className="events__list">
-        {events.length === 0 && !isLoading && <li>No events available.</li>}
-        {isLoading && <li>Loading...</li>}
-        {events.map((event) => (
-          <li key={event._id} className="events__list-item">
-            <h2>{event.title}</h2>
-            <h3>${event.price}</h3>
-            <p>{new Date(event.date).toLocaleDateString()}</p>
-            <p>{event.description}</p>
-          </li>
-        ))}
-      </ul>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <EventList
+          events={events}
+          authUserId={authContext.userId}
+          onViewDetail={showDetailHandler}
+        />
+      )}
     </>
   );
 };

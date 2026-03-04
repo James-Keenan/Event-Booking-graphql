@@ -1,0 +1,53 @@
+.event__list-item {
+margin: 1rem 0;
+padding: 1rem;
+border: 1px solid #1fb9b9; 
+display: flex;
+justify-content: space-between;
+
+
+ }
+
+ .event__list-item h1 {
+   margin: 0;
+   font-size: 1.5rem;
+   color: #1fb9b9; 
+ }
+
+ .event__list-item h2 {
+   margin: 0;
+   font-size: 1rem;
+   color: #878787;
+   padding-top: 1rem;
+ }
+
+ .event__list-item p {
+   margin: .75rem 0 0 0;
+   font-size: 0.9rem;
+   color: #878787;
+ }
+
+ .event__list-item button {
+   font: inherit;
+   border: none;
+   cursor: pointer;
+   color: white;
+   background: #1fb9b9; 
+   padding: 0.5rem 1.5rem;
+   border-radius: 8px;
+   transition: all 0.3s ease;
+ }
+
+ .event__list-item button:hover,
+ .event__list-item button:active {
+   background: #17a2a2;
+ }
+
+ .event__list-item b {
+   color: #1fb9b9; 
+ }
+
+ .your-event {
+   border-color: #1fb9b9; 
+   padding-left: 2rem;
+ }

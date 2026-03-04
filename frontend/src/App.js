@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 import AuthPage from "./pages/Auth";
@@ -17,12 +17,25 @@ function App() {
   const login = (token, userId, tokenExpiration) => {
     setToken(token);
     setUserId(userId);
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", userId);
   };
 
   const logout = () => {
     setToken(null);
     setUserId(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
   };
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedUserId = localStorage.getItem("userId");
+    if (storedToken && storedUserId) {
+      setToken(storedToken);
+      setUserId(storedUserId);
+    }
+  }, []);
 
   const isAuth = !!token;
 
@@ -42,7 +55,7 @@ function App() {
             {!isAuth && <Route path="/auth" element={<AuthPage />} />}
             {isAuth && <Route path="/events" element={<EventsPage />} />}
             {isAuth && <Route path="/bookings" element={<BookingPage />} />}
-            
+
             {!isAuth && (
               <Route path="*" element={<Navigate to="/auth" replace />} />
             )}
