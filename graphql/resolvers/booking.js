@@ -10,7 +10,7 @@ module.exports = {
     }
 
     try {
-      const bookings = await Booking.find();
+      const bookings = await Booking.find({ user: req.userId });
       return bookings.map((booking) => {
         return transformBooking(booking);
       });
@@ -42,6 +42,12 @@ module.exports = {
     }
     try {
       const booking = await Booking.findById(args.bookingId).populate("event");
+      if (!booking) {
+        throw new Error("Booking not found.");
+      }
+      if (booking.user.toString() !== req.userId) {
+        throw new Error("Unauthorized: you can only cancel your own bookings.");
+      }
       const event = transformEvent(booking.event);
       await Booking.deleteOne({ _id: args.bookingId });
       return event;

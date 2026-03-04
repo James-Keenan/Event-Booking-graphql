@@ -104,7 +104,7 @@ const BookingPage = () => {
 
   return (
     <div className="bookings-page">
-      <h1>My Bookings</h1>
+      <h1 className="bookings-title">My Bookings</h1>
       {error && <p className="error">{error}</p>}
       {isLoading ? (
         <Spinner />

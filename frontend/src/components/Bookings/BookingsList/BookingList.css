@@ -1,3 +1,23 @@
+.booking__empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  border: 1px dashed #1fb9b9;
+  border-radius: 8px;
+  margin-top: 2rem;
+}
+
+.booking__empty p {
+  font-size: 1.3rem;
+  color: #1fb9b9;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+}
+
+.booking__empty span {
+  font-size: 0.95rem;
+  color: #878787;
+}
+
 .booking__list {
   list-style: none;
   padding: 0;

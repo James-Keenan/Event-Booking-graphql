@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 
 import AuthPage from "./pages/Auth";
@@ -11,8 +11,8 @@ import Navbar from "./components/navigation/MainNavagation";
 import { AuthContext } from "./context/auth-context";
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userId, setUserId] = useState(localStorage.getItem("userId"));
 
   const login = (token, userId, tokenExpiration) => {
     setToken(token);
@@ -27,15 +27,6 @@ function App() {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
   };
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUserId = localStorage.getItem("userId");
-    if (storedToken && storedUserId) {
-      setToken(storedToken);
-      setUserId(storedUserId);
-    }
-  }, []);
 
   const isAuth = !!token;
 

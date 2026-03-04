@@ -210,6 +210,9 @@ const EventsPage = () => {
 
   return (
     <>
+
+          <h1 className="events-title">Events</h1>
+          
       {(creating || selectedEvent) && <Backdrop />}
       {creating && (
         <Modal

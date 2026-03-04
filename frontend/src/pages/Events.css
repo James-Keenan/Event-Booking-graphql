@@ -8,6 +8,21 @@ max-width: 80%;
 }
 
 
+.events-title{
+  color: #1fb9b9;
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  text-decoration-color: #1fb9b9;
+  letter-spacing: 0.3rem;
+  font-weight: 300;
+  text-transform: uppercase;
+
+    
+}
+
+
 
 
 
