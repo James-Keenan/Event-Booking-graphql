@@ -26,11 +26,12 @@
 
 .booking__list-item {
   display: flex;
+  position: relative;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
   margin: 1rem 0;
-  border: 1px solid #1fb9b9;
+  border: 3px solid #1fb9b9;
   border-radius: 8px;
 }
 
@@ -54,5 +55,8 @@
 
 .booking__list-item-actions {
   display: flex;
+  position: absolute;
+  bottom: 1rem;
+  right: 0.5rem;
   gap: 0.5rem;
 }

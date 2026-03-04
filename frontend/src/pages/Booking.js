@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import { AuthContext } from "../context/auth-context";
 import Spinner from "../components/spinner/spinner";
 import BookingList from "../components/Bookings/BookingsList/BookingList";
+import BookingChart from "../components/Bookings/BookingChart/BookingChart";
+import BookingControls from "../components/Bookings/BookingControls/BookingControls";
 import "./Booking.css";
 
 const BookingPage = () => {
@@ -9,6 +11,7 @@ const BookingPage = () => {
   const [bookings, setBookings] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [outputType, setOutputType] = useState("list");
 
   const fetchBookingsHandler = useCallback(async () => {
     setIsLoading(true);
@@ -105,17 +108,37 @@ const BookingPage = () => {
     }
   };
 
-  return (
-    <div className="bookings-page">
-      <h1 className="bookings-title">My Bookings</h1>
-      {error && <p className="error">{error}</p>}
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <BookingList bookings={bookings} onCancel={cancelBookingHandler} />
-      )}
-    </div>
-  );
+  let content = <Spinner />;
+
+  const changeOutputTypeHandler = (type) => {
+    if (type === "list") {
+      setOutputType("list");
+    } else {
+      setOutputType("chart");
+    }
+  };
+
+  if (!isLoading) {
+    content = (
+      <>
+        <h1 className="bookings-title">My Bookings</h1>
+        {error && <p className="error">{error}</p>}
+        <BookingControls
+          outputType={outputType}
+          onChangeType={changeOutputTypeHandler}
+        />
+        <div>
+          {outputType === "list" ? (
+            <BookingList bookings={bookings} onCancel={cancelBookingHandler} />
+          ) : (
+            <BookingChart bookings={bookings} />
+          )}
+        </div>
+      </>
+    );
+  }
+
+  return <div className="bookings-page">{content}</div>;
 };
 
 export default BookingPage;

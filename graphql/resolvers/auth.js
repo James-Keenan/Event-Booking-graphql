@@ -46,13 +46,13 @@ module.exports = {
       const token = jwt.sign(
         { userId: user.id, email: user.email },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" },
+        { expiresIn: "1d" },
       );
 
       return {
         userId: user.id,
         token: token,
-        tokenExpiration: 1,
+        tokenExpiration: 24,
       };
     } catch (err) {
       throw err;

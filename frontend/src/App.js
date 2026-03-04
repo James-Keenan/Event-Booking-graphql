@@ -11,14 +11,31 @@ import Navbar from "./components/navigation/MainNavagation";
 import { AuthContext } from "./context/auth-context";
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [userId, setUserId] = useState(localStorage.getItem("userId"));
+  const getStoredToken = () => {
+    const storedToken = localStorage.getItem("token");
+    const storedExpiry = localStorage.getItem("tokenExpiry");
+    if (storedToken && storedExpiry && Date.now() < Number(storedExpiry)) {
+      return storedToken;
+    }
+    // Token missing or expired — clear storage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("tokenExpiry");
+    return null;
+  };
+
+  const [token, setToken] = useState(getStoredToken);
+  const [userId, setUserId] = useState(() =>
+    getStoredToken() ? localStorage.getItem("userId") : null,
+  );
 
   const login = (token, userId, tokenExpiration) => {
+    const expiryMs = Date.now() + tokenExpiration * 60 * 60 * 1000;
     setToken(token);
     setUserId(userId);
     localStorage.setItem("token", token);
     localStorage.setItem("userId", userId);
+    localStorage.setItem("tokenExpiry", String(expiryMs));
   };
 
   const logout = () => {
@@ -26,6 +43,7 @@ function App() {
     setUserId(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("tokenExpiry");
   };
 
   const isAuth = !!token;

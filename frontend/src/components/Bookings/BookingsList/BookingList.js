@@ -19,14 +19,11 @@ const BookingList = (props) => {
             <h2>{booking.event.title}</h2>
             <h3>${booking.event.price}</h3>
             <p>{new Date(booking.event.date).toLocaleDateString()}</p>
-            <div className="booking__list-item-actions">
-              <button
-                className="btn"
-                onClick={() => props.onCancel(booking._id)}
-              >
-                Cancel
-              </button>
-            </div>
+          </div>
+          <div className="booking__list-item-actions">
+            <button className="btn" onClick={() => props.onCancel(booking._id)}>
+              Cancel
+            </button>
           </div>
         </li>
       ))}

@@ -14,3 +14,26 @@
   font-weight: 300;
   text-transform: uppercase;
 }
+
+.bookings-list_chart-toggles {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.bookings-list_chart-toggles button {
+  font: inherit;
+  border: none;
+  cursor: pointer;
+  background-color: #1fb9b9;
+  color: #ffffff;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.bookings-list_chart-toggles button:hover {
+  background: #e6e7e7;
+  transform: scale(1.10);
+}
